@@ -1,5 +1,6 @@
 import streamlit as st
 from web3 import Web3
+import streamlit.components.v1 as components
 
 # --- إعدادات المشروع الأساسية ---
 CONTRACT_ADDRESS = "0x881D12E3a4d32f3dF439EF0F73546A9a67004723"
@@ -24,20 +25,21 @@ def get_token_balance(user_address):
         return raw_balance / (10**decimals)
     except: return 0
 
-# --- تصميم الواجهة الاحترافية ---
+# --- تصميم الواجهة ---
 st.set_page_config(page_title="ROON AL VIP | المحلل الذكي", layout="wide")
 
-# تخصيص الألوان والخلفية
+# CSS لتحسين المظهر
 st.markdown("""
     <style>
-    .main { background-color: #0e1117; color: white; }
-    .stButton>button { width: 100%; border-radius: 10px; height: 3em; background-color: #f3ba2f; color: black; font-weight: bold; border: none; }
-    .stButton>button:hover { background-color: #ffcc00; color: black; }
+    .stApp { background-color: #0e1117; color: white; }
+    .price-card { background: #1e293b; padding: 20px; border-radius: 15px; text-align: center; border: 1px solid #334155; }
+    .stButton>button { width: 100%; border-radius: 10px; background-color: #f3ba2f; color: black; font-weight: bold; }
     </style>
     """, unsafe_allow_html=True)
 
-# شريط جانبي للبوابة
+# --- الشريط الجانبي (Sidebar) ---
 with st.sidebar:
+    st.image("logo.png", width=150)
     st.markdown("<h2 style='text-align: center;'>🔐 بوابة المشتركين</h2>", unsafe_allow_html=True)
     user_wallet = st.text_input("أدخل عنوان محفظتك (BEP-20):", placeholder="0x...")
     
@@ -45,34 +47,74 @@ with st.sidebar:
     if user_wallet:
         balance = get_token_balance(user_wallet)
         if user_wallet.lower() == MY_ADMIN_WALLET.lower():
-            st.success("✅ أهلاً بك يا مطور ROON AL")
+            st.success("✅ أهلاً بك يا مطور المشروع")
             access_granted = True
         elif balance >= 100:
             st.success(f"✅ تم التحقق! رصيدك: {balance:,.0f}")
             access_granted = True
         else:
-            st.error(f"❌ رصيدك {balance:,.0f} غير كافٍ")
+            st.error(f"❌ رصيدك {balance:,.0f} غير كافٍ (تحتاج 100)")
 
-# المحتوى الرئيسي عند الدخول
+# --- المحتوى الرئيسي ---
 if access_granted:
-    st.title("📊 لوحة تحكم المحلل الفني الذكي")
-    st.info("مرحباً بك في المنطقة الخاصة. نظام التحليل الفني قيد التفعيل...")
-    # هنا سيتم إضافة كود التحليل الفني لاحقاً
+    st.title("📊 لوحة تحكم ROON AL الذكية")
+    
+    # 1. عرض أسعار العملات (Widgets)
+    col1, col2, col3, col4 = st.columns(4)
+    with col1: st.metric("BTC / USDT", "$63,840", "+1.2%")
+    with col2: st.metric("BNB / USDT", "$585.4", "+0.5%")
+    with col3: st.metric("SOL / USDT", "$142.1", "-2.1%")
+    with col4: st.metric("ROON AL", "$0.00045", "New")
+
+    st.divider()
+
+    # 2. الرسم البياني الاحترافي (TradingView)
+    st.subheader("📈 التحليل الفني المباشر (BTC/USDT)")
+    tradingview_html = """
+    <div class="tradingview-widget-container" style="height:500px;">
+      <div id="tradingview_chart"></div>
+      <script type="text/javascript" src="https://s3.tradingview.com/tv.js"></script>
+      <script type="text/javascript">
+      new TradingView.widget({
+        "autosize": true,
+        "symbol": "BINANCE:BTCUSDT",
+        "interval": "H",
+        "timezone": "Etc/UTC",
+        "theme": "dark",
+        "style": "1",
+        "locale": "ar",
+        "toolbar_bg": "#f1f3f6",
+        "enable_publishing": false,
+        "hide_side_toolbar": false,
+        "allow_symbol_change": true,
+        "container_id": "tradingview_chart"
+      });
+      </script>
+    </div>
+    """
+    components.html(tradingview_html, height=500)
+
+    # 3. قسم التوصيات والذكاء الاصطناعي
+    st.divider()
+    c1, c2 = st.columns(2)
+    with c1:
+        st.info("🎯 **توصية الذكاء الاصطناعي اليوم:**")
+        st.write("- اتجاه السوق: **متذبذب يميل للصعود**")
+        st.write("- نقطة الدعم القادمة لـ ROON: **0.00040**")
+        st.write("- نقطة المقاومة: **0.00055**")
+    with c2:
+        st.warning("🔔 **تنبيهات الحيتان:**")
+        st.write("- تم رصد دخول سيولة كبيرة في شبكة BSC.")
+        st.write("- زيادة في عدد المحفظات الحاملة لعملة $RAL بنسبة 5%.")
+
 else:
-    # واجهة العرض العامة (قبل الدخول)
-    col1, col2, col3 = st.columns([1, 2, 1])
-    with col2:
+    # واجهة العرض للزوار (قبل الدخول)
+    col_l, col_m, col_r = st.columns([1, 2, 1])
+    with col_m:
         st.image("logo.png", use_container_width=True)
         st.markdown("<h1 style='text-align: center;'>ROON AL VIP</h1>", unsafe_allow_html=True)
-        st.markdown("<p style='text-align: center; font-size: 1.2em;'>اكتشف قوة التحليل الفني المعتمد على الذكاء الاصطناعي</p>", unsafe_allow_html=True)
+        st.markdown("<p style='text-align: center;'>النظام الأذكى لتحليل العملات الرقمية. تملك 100 قطعة لفتح المميزات.</p>", unsafe_allow_html=True)
         
         st.divider()
-        
-        st.markdown("### 🔥 فرصة استثمارية: البيع المسبق مفتوح الآن")
-        st.write("احصل على عملة ROON AL قبل الجميع واستفد من ميزات المحلل الذكي الحصرية.")
-        
-        # رابط الشراء من Thirdweb (استبدل الرابط أدناه برابط صفحة الشراء الخاصة بك)
-        buy_link = "https://thirdweb.com/binance/0x881D12E3a4d32f3dF439EF0F73546A9a67004723"
-        st.link_button("🚀 اشترِ عملة ROON AL الآن", buy_link)
-        
-        st.warning("⚠️ يتطلب دخول المحلل الفني امتلاك 100 قطعة على الأقل.")
+        st.markdown("### 🔥 شارك في البيع المسبق الآن")
+        st.link_button("🚀 اشترِ ROON AL من Thirdweb", "https://thirdweb.com/binance/0x881D12E3a4d32f3dF439EF0F73546A9a67004723")
