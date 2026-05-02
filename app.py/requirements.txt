@@ -1,4 +1,0 @@
-streamlit
-web3
-ccxt
-pandas
