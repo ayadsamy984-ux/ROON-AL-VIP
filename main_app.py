@@ -9,7 +9,7 @@ st.set_page_config(page_title="ROON AL VIP Analyzer", layout="wide")
 # --- بيانات العملة والشبكة ---
 # ⚠️ ضع عنوان عقد عملتك هنا
 CONTRACT_ADDRESS = "0x881D12E3a4d32f3df439EF0F73546A9a67004723" 
-RPC_URL = "[https://bsc-dataseed.binance.org/](https://bsc-dataseed.binance.org/)"
+RPC_URL = "https://bsc-dataseed.binance.org/"
 
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
 
